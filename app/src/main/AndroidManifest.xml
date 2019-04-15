@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.administrator.emojify">
+<uses-feature
+  android:name="android.hardware.camera"
+  android:required="true"/>//应用程序将使用到camera,当设备不提供相机时，应用程序就不能正常运行或未设计为能够正常运行。
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>//读写SD卡权限
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">//provider的类名,表示授予 URI 临时访问权限
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <activity android:name=".MainActivity"
+               android:screenOrientation="portrait">>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
