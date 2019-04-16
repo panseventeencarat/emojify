@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -82,76 +83,68 @@ import java.util.Locale;
         }
         return deleted;
     }
+    //该方法让图片内容提供器将传入路径下的图片添加到系统图库中，以便其他应用能查找该图片。仅在下文所述的 saveImage() 中被调用。
     private static void galleryAddPic(Context context, String imagePath) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(imagePath);
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);//程序通过发送下面的Intent启动MediaScanner服务扫描指定的文件
+        File f = new File(imagePath);//图片文件路径
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         context.sendBroadcast(mediaScanIntent);
     }
 
-
     /**
-     * Helper method for saving the image.
+     * 将传入的位图保存到外部存储器中，放入叫做“Emojify”的子目录下。它还会通过调用上述 galleryAddPic() 将该图片添加到系统图库中
      *
      * @param context The application context.
-     * @param image   The image to be saved.
-     * @return The path of the saved image.
+     * @param image   被保存的图片
+     * @return 被保存图片的路径
      */
-    static String saveImage(Context context, Bitmap image) {
-
-        String savedImagePath = null;
-
-        // Create the new file in the external storage
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
-                Locale.getDefault()).format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + ".jpg";
-        File storageDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                        + "/Emojify");
-        boolean success = true;
-        if (!storageDir.exists()) {
-            success = storageDir.mkdirs();
+    static String saveImage(Context context,Bitmap image){
+        String savedImagePath=null;
+     //在外部存储中创建新文件
+        String timeStamp=new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir =new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/Emojify");
+        boolean success=true;
+        if (!storageDir.exists()){
+            success=storageDir.mkdir();
         }
-
-        // Save the new Bitmap
-        if (success) {
-            File imageFile = new File(storageDir, imageFileName);
-            savedImagePath = imageFile.getAbsolutePath();
+        //保存新图像
+        if (success){
+           File imageFile=new File(imageFileName);
+            savedImagePath=imageFile.getAbsolutePath();
             try {
-                OutputStream fOut = new FileOutputStream(imageFile);
-                image.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                OutputStream fOut=new FileOutputStream(imageFile);
+                image.compress(Bitmap.CompressFormat.JPEG,100,fOut);//压缩图像，保留原图像100%的品质
                 fOut.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            // Add the image to the system gallery
-            galleryAddPic(context, savedImagePath);
-
-            // Show a Toast with the save location
-            String savedMessage = context.getString(R.string.saved_message, savedImagePath);
-            Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show();
+            //将图像添加到系统库
+            galleryAddPic(context,savedImagePath);
+            //在弹窗中显示保存位置
+            String savedMessage=context.getString(R.string.saved_message,savedImagePath);
+            Toast.makeText(context,savedMessage,Toast.LENGTH_SHORT).show();
         }
-
         return savedImagePath;
     }
-
     /**
-     * Helper method for sharing an image.
-     *
+
+     *该方法会创建一个共享隐式 Intent，该 Intent 将调出系统选择器，其中包含处理图片共享的应用。
      * @param context   The image context.
-     * @param imagePath The path of the image to be shared.
+     * @param imagePath 图片被分享的路径
      */
     static void shareImage(Context context, String imagePath) {
-        // Create the share intent and start the share activity
+        // 创建一个共享隐式 Intent，开启共享的应用
         File imageFile = new File(imagePath);
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);//创建共享隐式 Intent调用手机默认分享
         shareIntent.setType("image/*");
         Uri photoURI = FileProvider.getUriForFile(context, FILE_PROVIDER_AUTHORITY, imageFile);
         shareIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
         context.startActivity(shareIntent);
     }
+
+
 }
 
 
