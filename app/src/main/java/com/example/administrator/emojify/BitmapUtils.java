@@ -103,15 +103,15 @@ import java.util.Locale;
         String savedImagePath=null;
      //在外部存储中创建新文件
         String timeStamp=new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = "JPEG_" + timeStamp + "_" + ".jpg";
         File storageDir =new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/Emojify");
         boolean success=true;
         if (!storageDir.exists()){
-            success=storageDir.mkdir();
+            success=storageDir.mkdirs();
         }
         //保存新图像
         if (success){
-           File imageFile=new File(imageFileName);
+           File imageFile=new File(storageDir,imageFileName);
             savedImagePath=imageFile.getAbsolutePath();
             try {
                 OutputStream fOut=new FileOutputStream(imageFile);

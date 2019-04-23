@@ -16,28 +16,36 @@
             android:id="@+id/image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/view_margin"
             android:contentDescription="@string/imageview_description"
-            android:scaleType="fitStart" />
-
+            android:scaleType="fitStart"
+            android:layout_marginLeft="@dimen/view_margin"
+            android:layout_marginRight="@dimen/view_margin"
+            android:layout_marginBottom="@dimen/view_margin"
+            android:layout_below="@+id/save_button" />
+<ImageView android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:src="@drawable/fox"/>
         <TextView
             android:id="@+id/title_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/emojify_button"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="@dimen/view_margin"
             android:text="@string/emojify_me"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+            android:textSize="50sp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:layout_below="@+id/save_button"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="81dp" />
 
         <Button
             android:id="@+id/emojify_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
             android:text="@string/go"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+            android:background="#d2f1facc"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:layout_marginBottom="109dp"
+            android:layout_alignBottom="@+id/image_view"
+            android:layout_centerHorizontal="true" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/clear_button"
