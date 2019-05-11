@@ -33,10 +33,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_STORAGE_PERMISSION = 1;
 
-    private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
+    private static final String FILE_PROVIDER_AUTHORITY = "com.example.administrator.fileprovider";//provider的类名,表示授予 URI 临时访问权限
 
-    @BindView(R.id.image_view) ImageView mImageView;
-
+    @BindView(R.id.image_view) ImageView mImageView;//绑定一个view；id为一个view 变量
+    @BindView(R.id.imageView2) ImageView mImageView2;
     @BindView(R.id.emojify_button) Button mEmojifyButton;
     @BindView(R.id.share_button) FloatingActionButton mShareFab;
     @BindView(R.id.save_button) FloatingActionButton mSaveFab;
@@ -54,29 +54,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Bind the views
+        //绑定view
         ButterKnife.bind(this);
 
-        // Set up Timber
+        // 创建Timber
         Timber.plant(new Timber.DebugTree());
     }
 
     /**
-     * OnClick method for "Emojify Me!" Button. Launches the camera app.
+     * 使用onclick方法让emojifyMebutton启用相机应用
      */
     @OnClick(R.id.emojify_button)
     public void emojifyMe() {
-        // Check for the external storage permission
+        // /检查是否授予外部存储读写权限
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            // If you do not have permission, request it
+            // 如果未授予权限，则请求权限
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_STORAGE_PERMISSION);
         } else {
-            // Launch the camera if the permission exists
+            // 如果已授予，就开启相机
             launchCamera();
         }
     }
@@ -84,15 +84,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        // Called when you request permission to read and write to external storage
+        //当请求外部存储读写权限时调用这个函数,grantResults表示调回结果，requestCode表示请求码
         switch (requestCode) {
             case REQUEST_STORAGE_PERMISSION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // If you get permission, launch the camera
+                    //获得权限，开启相机
                     launchCamera();
                 } else {
-                    // If you do not get permission, show a Toast
+                    //若获取失败，则跳出弹窗
                     Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -101,38 +101,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Creates a temporary image file and captures a picture to store in it.
+     *创建临时文件，并把捕获的照片放入
      */
     private void launchCamera() {
 
-        // Create the capture image intent
+        //用ACTION_IMAGE_CAPTURE隐式intent，实现用本地相机拍照
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        // Ensure that there's a camera activity to handle the intent
+        // 确保有相机来处理intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the temporary File where the photo should go
+            //使用BitmapUtils类创建一个临时存放照片的文件
             File photoFile = null;
             try {
                 photoFile = BitmapUtils.createTempImageFile(this);
             } catch (IOException ex) {
-                // Error occurred while creating the File
+                //创建文件时出错
                 ex.printStackTrace();
             }
-            // Continue only if the File was successfully created
+            //仅在创建文件成功是继续进行操作
             if (photoFile != null) {
 
-                // Get the path of the temporary file
+                // 获得临时文件路径
                 mTempPhotoPath = photoFile.getAbsolutePath();
 
-                // Get the content URI for the image file
+                //获得图片文件的URI
                 Uri photoURI = FileProvider.getUriForFile(this,
                         FILE_PROVIDER_AUTHORITY,
                         photoFile);
 
-                // Add the URI so the camera can store the image
+                // 将uri传入intent，使相机可以存储图片
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
-                // Launch the camera activity
+                // 从相机获取结果，是否捕获了照片
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -141,82 +141,84 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // If the image capture activity was called and was successful
+        // 如果以上图像捕获被调用并且成功
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            // Process the image and set it to the TextView
+            // 处理图像并把它放到textview中
             processAndSetImage();
         } else {
 
-            // Otherwise, delete the temporary image file
+            // 删除临时文件
             BitmapUtils.deleteImageFile(this, mTempPhotoPath);
         }
     }
 
     /**
-     * Method for processing the captured image and setting it to the TextView.
+     * 用于处理捕获的图像，并且把它放到Textview中
      */
     private void processAndSetImage() {
 
-        // Toggle Visibility of the views
+        // 切换视图可见性，把隐藏的浮动的按钮同时显示出来
+        mImageView2.setVisibility(View.GONE);
         mEmojifyButton.setVisibility(View.GONE);
         mTitleTextView.setVisibility(View.GONE);
         mSaveFab.setVisibility(View.VISIBLE);
         mShareFab.setVisibility(View.VISIBLE);
         mClearFab.setVisibility(View.VISIBLE);
 
-        // Resample the saved image to fit the ImageView
+        // 对保存的图像重新取样以适应 imageview
         mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
 
 
-        // Detect the faces and overlay the appropriate emoji
+        // D检测面部并覆盖emoji表情
         mResultsBitmap = Emojifier.detectFacesandOverlayEmoji(this, mResultsBitmap);
 
-        // Set the new bitmap to the ImageView
+        // 将生成的图像位图设置为imageview
         mImageView.setImageBitmap(mResultsBitmap);
     }
 
 
     /**
-     * OnClick method for the save button.
+     * 保存按钮的点击事件
      */
     @OnClick(R.id.save_button)
     public void saveMe() {
-        // Delete the temporary image file
+        // 删除临时图片文件
         BitmapUtils.deleteImageFile(this, mTempPhotoPath);
 
-        // Save the image
+        // 在外部存储器中保存处理后的图片
         BitmapUtils.saveImage(this, mResultsBitmap);
     }
 
     /**
-     * OnClick method for the share button, saves and shares the new bitmap.
+     * 分享按钮的点击事件
      */
     @OnClick(R.id.share_button)
     public void shareMe() {
-        // Delete the temporary image file
+        //删除临时图片文件
         BitmapUtils.deleteImageFile(this, mTempPhotoPath);
 
-        // Save the image
+        // 在外部存储器中保存处理后的图片
         BitmapUtils.saveImage(this, mResultsBitmap);
 
-        // Share the image
-        BitmapUtils.shareImage(this, mTempPhotoPath);
+        // 分享图片
+        BitmapUtils.shareImage(this, BitmapUtils.saveImage(this, mResultsBitmap));
     }
 
     /**
-     * OnClick for the clear button, resets the app to original state.
+     * 删除按钮的点击事件
      */
     @OnClick(R.id.clear_button)
     public void clearImage() {
-        // Clear the image and toggle the view visibility
+        // 清除照片并改变视图可见性
         mImageView.setImageResource(0);
+        mImageView2.setVisibility(View.VISIBLE);
         mEmojifyButton.setVisibility(View.VISIBLE);
         mTitleTextView.setVisibility(View.VISIBLE);
         mShareFab.setVisibility(View.GONE);
         mSaveFab.setVisibility(View.GONE);
         mClearFab.setVisibility(View.GONE);
 
-        // Delete the temporary image file
+        // 删除临时图片文件
         BitmapUtils.deleteImageFile(this, mTempPhotoPath);
     }
 }

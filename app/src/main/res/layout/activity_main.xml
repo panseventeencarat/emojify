@@ -12,23 +12,21 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.administrator.emojify.MainActivity">
 
-        <ImageView
-            android:id="@+id/image_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/imageview_description"
-            android:scaleType="fitStart"
-            android:layout_marginLeft="@dimen/view_margin"
-            android:layout_marginRight="@dimen/view_margin"
-            android:layout_marginBottom="@dimen/view_margin"
-            android:layout_below="@+id/save_button" />
+
 <ImageView android:layout_height="400dp"
     android:layout_width="250dp"
     android:src="@drawable/fox"
     android:layout_below="@+id/save_button"
     android:layout_centerHorizontal="true"
     android:layout_marginTop="50dp"
-    android:id="@+id/imageView" />
+    android:id="@+id/imageView2" />
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/view_margin"
+            android:contentDescription="@string/imageview_description"
+            android:scaleType="fitStart" />
         <TextView
             android:id="@+id/title_text_view"
             android:layout_width="wrap_content"
@@ -47,8 +45,8 @@
             android:text="@string/go"
             android:background="#d2f1facc"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:layout_centerHorizontal="true"
-            android:layout_alignBottom="@+id/imageView" />
+            android:layout_alignBottom="@+id/imageView2"
+            android:layout_centerHorizontal="true" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/clear_button"

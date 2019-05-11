@@ -13,6 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.-->
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-cache-path name="my_cache" path="." />//patn需要临时授权访问的相对路径,.代表所有路径，系统提供了一个可管理的“内部缓存”
+    <external-cache-path name="my_cache" path="." />//path需要临时授权访问的相对路径,.代表所有路径，系统提供了一个可管理的“内部缓存”
     <external-path name="my_images" path="Pictures/" />//在获取的目录中新建一个hkapp文件夹，用来存放下载的apk文件
 </paths>
